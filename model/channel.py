@@ -1,5 +1,7 @@
-from datetime import datetime
 import backtrader as bt
+import math
+from datetime import date, timedelta, datetime
+
 
 # 定義一個Indicator物件
 class DonchianChannels(bt.Indicator):
@@ -12,7 +14,7 @@ class DonchianChannels(bt.Indicator):
     # 軌道的計算方式：用過去20天的資料來計算，所以period是20，lookback的意思是要不要將今天的資料納入計算，由於唐奇安通道是取過去20天的最高或最低，所以一定不能涵蓋今天，不然永遠不會有訊號出現，所以要填-1(從前一天開始算20天)
     # 計算前 20 日的高點
     params = dict(
-        period=20,
+        period=10,
         lookback=-1,  # consider current bar or not
     )
     
@@ -29,7 +31,7 @@ class DonchianChannels(bt.Indicator):
     def __init__(self):
         # hi與lo是指每日股價的最高與最低價格
         hi, lo = self.data.high, self.data.low
-        
+
         # 視需求決定是否要從前一天開始讀資料，上面已經定義lookback存在，所以這邊會直接從前一天的資料開始跑
         if self.p.lookback:  # move backwards as needed
             hi, lo = hi(self.p.lookback), lo(self.p.lookback)
@@ -41,12 +43,33 @@ class DonchianChannels(bt.Indicator):
 
 # 撰寫交易策略
 class MyStrategy(bt.Strategy):
+
+    # 交易紀錄
+    def log(self, txt, dt=None):
+        dt = dt or self.datas[0].datetime.date(0)
+        print('%s, %s' % (dt.isoformat(), txt))
     def __init__(self):
         # DCH就是上面定義的 DonchianChannels的alias
         self.myind = DCH()
+        self.setsizer(sizer())
+        self.dataopen = self.datas[0].open
 
     def next(self):
-        if self.data[0] > self.myind.dch[0]:
-            self.sell()
-        elif self.data[0] < self.myind.dcl[0]:
-            self.buy()
+        if self.data[0] < self.myind.dcl[0]:
+            self.log('BUY ' + ', Price: ' + str(self.dataopen[0]))
+            self.buy(price=self.dataopen[0])
+        elif self.data[0] > self.myind.dch[0]:
+            self.log('SELL ' + ', Price: ' + str(self.dataopen[0]))
+            for data in self.datas:
+                size=self.getposition(data).size
+                if  size!=0:
+                    self.close(data)
+class sizer(bt.Sizer):
+    def _getsizing(self, comminfo, cash, data, isbuy):
+        if isbuy:
+            if data.datetime.date(0) == (datetime.today()-timedelta(days=1)).date():
+                print("BUY today!")
+                return math.floor(cash/data[0]/10)
+            return math.floor(cash/data[1]/3)
+        else:
+            return self.broker.getposition(data)

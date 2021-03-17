@@ -1,5 +1,6 @@
 import backtrader as bt
 import math
+from datetime import date, timedelta, datetime
 
 # sma cross strategy
 class SmaCross(bt.Strategy):
@@ -49,6 +50,9 @@ class SmaCross(bt.Strategy):
 class sizer(bt.Sizer):
     def _getsizing(self, comminfo, cash, data, isbuy):
         if isbuy:
-            return math.floor(cash/data[1])
+            if data.datetime.date(0) == (datetime.today()-timedelta(days=1)).date():
+                print("BUY today!")
+                return math.floor(cash/data[0]/10)
+            return math.floor(cash/data[1]/10)
         else:
             return self.broker.getposition(data)

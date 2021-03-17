@@ -13,14 +13,14 @@ plt.close()
 
 cerebro = bt.Cerebro()
 cerebro.addstrategy(MyStrategy)
-cerebro.broker.setcash(3000)
-cerebro.broker.setcommission(commission=0.001)
+cerebro.broker.setcash(100000)
+cerebro.broker.setcommission(commission=0.0005)
 
 # data = bt.feeds.YahooFinanceData(dataname='TSLA',
 #                                  fromdate=datetime(2020, 1, 1),
 #                                  todate=datetime(2020, 9, 15))
 
-df = getData(t='AMZN')
+df = getData(t='nflx')
 
 data = bt.feeds.PandasData(dataname=df)
 

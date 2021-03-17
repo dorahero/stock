@@ -1,6 +1,7 @@
 import pandas as pd
 
 def getData(t='TSLA'):
+    t = t.upper()
     from sqlalchemy import create_engine
     from util.setting import MYSQL_URL
     engine = create_engine(MYSQL_URL)
@@ -33,12 +34,13 @@ def updateData():
     inspector = inspect(engine)
     schemas = inspector.get_schema_names()
 
-    table_list = []
+    table_list = ["ARKK", "NFLX", "NVDA", "TTWO", "VOO"]
     data_col = ['Close','High','Low','Open','Volume']
     for schema in schemas:
         if schema == "stock":
             for table_name in inspector.get_table_names(schema=schema):
                 table_list.append(table_name)
+    
 
     from util.setting import TOKEN
     from datetime import date
@@ -57,8 +59,9 @@ def updateData():
 
     # 用 replace 將符號進行替換
     stk_list = data.Symbol.apply(lambda x: x.replace('.', '-'))
-
-    for s in stk_list[:10]:
+    _ = set(stk_list[:10])
+    _.update(set(["AAPL", "ARKK", "NFLX", "NVDA", "TTWO", "TSLA", "GOOG", "VOO"]))
+    for s in _:
         TSLA = pdr.get_data_tiingo(s, api_key=TOKEN)
         TSLA = TSLA.reset_index(level=[0,1])
 
@@ -68,6 +71,7 @@ def updateData():
 
         TSLA_adj = TSLA_adj[(TSLA_adj.index > '2020-01-01') & (TSLA_adj.index < today.strftime("%Y-%m-%d"))]
 
-        if s in table_list:
-            TSLA_adj.to_sql(s, engine, if_exists='replace')
+        # if s in table_list:
+        #     TSLA_adj.to_sql(s, engine, if_exists='replace')
+        TSLA_adj.to_sql(s, engine, if_exists='replace')
         print(s, "Insert successfully")

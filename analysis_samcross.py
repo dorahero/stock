@@ -12,12 +12,15 @@ plt.plot([1,3,2,4])
 plt.close()
 
 df = getData(t='TSLA')
-
 data = bt.feeds.PandasData(dataname=df)
+
+# data = bt.feeds.YahooFinanceData(dataname='BRK-B',
+#                                  fromdate=datetime(2020, 1, 1),
+#                                  todate=datetime(2021, 3, 17))
 
 # 初始化cerebro
 cerebro = bt.Cerebro()
-cerebro.broker.setcash(10000)
+cerebro.broker.setcash(100000)
 cerebro.broker.setcommission(commission=0.0005)
 # feed data
 cerebro.adddata(data)

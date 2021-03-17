@@ -9,7 +9,7 @@ engine = create_engine(MYSQL_URL)
 inspector = inspect(engine)
 schemas = inspector.get_schema_names()
 
-table_list = []
+table_list = ["ARKK", "NFLX", "NVDA", "TTWO", "VOO"]
 data_col = ['Close','High','Low','Open','Volume']
 for schema in schemas:
     if schema == "stock":
