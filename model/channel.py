@@ -2,7 +2,7 @@ import backtrader as bt
 import math
 from datetime import date, timedelta, datetime
 from tools.tools import prev_weekday
-from var.channel_var import SELL_TIMES
+from var.channel_var import *
 
 # 定義一個Indicator物件
 class DonchianChannels(bt.Indicator):
@@ -15,8 +15,8 @@ class DonchianChannels(bt.Indicator):
     # 軌道的計算方式：用過去20天的資料來計算，所以period是20，lookback的意思是要不要將今天的資料納入計算，由於唐奇安通道是取過去20天的最高或最低，所以一定不能涵蓋今天，不然永遠不會有訊號出現，所以要填-1(從前一天開始算20天)
     # 計算前 20 日的高點
     params = dict(
-        period=10,
-        lookback=-1,  # consider current bar or not
+        period=PERIOD,
+        lookback=LOOKBACK,  # consider current bar or not
     )
     
     # 是否要將Indicators另外畫一張圖，然而通道線通常都是跟股價圖畫在同一張，才能看得出相對關係，所以這裡就填subplot=False
