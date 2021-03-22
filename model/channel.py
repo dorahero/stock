@@ -1,7 +1,8 @@
 import backtrader as bt
 import math
 from datetime import date, timedelta, datetime
-
+from tools.tools import prev_weekday
+from var.channel_var import SELL_TIMES
 
 # 定義一個Indicator物件
 class DonchianChannels(bt.Indicator):
@@ -49,27 +50,40 @@ class MyStrategy(bt.Strategy):
         dt = dt or self.datas[0].datetime.date(0)
         print('%s, %s' % (dt.isoformat(), txt))
     def __init__(self):
+        self.counter_buy = 0
+        self.counter_sell = 0
         # DCH就是上面定義的 DonchianChannels的alias
         self.myind = DCH()
         self.setsizer(sizer())
         self.dataopen = self.datas[0].open
+        self.dataclose = self.datas[0].close
 
     def next(self):
         if self.data[0] < self.myind.dcl[0]:
             self.log('BUY ' + ', Price: ' + str(self.dataopen[0]))
             self.buy(price=self.dataopen[0])
+            self.counter_sell = 0
         elif self.data[0] > self.myind.dch[0]:
-            self.log('SELL ' + ', Price: ' + str(self.dataopen[0]))
-            for data in self.datas:
-                size=self.getposition(data).size
-                if  size!=0:
-                    self.close(data)
+            self.counter_sell += 1
+            if self.counter_sell > SELL_TIMES:
+                self.log('SELL ' + ', Price: ' + str(self.dataopen[0]))
+                # for data in self.datas:
+                #     size=self.getposition(data).size
+                #     if  size!= 0:
+                #         self.close(data)
+                self.sell(price=self.dataopen[0])
+                self.counter_sell = 0
+
 class sizer(bt.Sizer):
     def _getsizing(self, comminfo, cash, data, isbuy):
         if isbuy:
-            if data.datetime.date(0) == (datetime.today()-timedelta(days=1)).date():
+            if data.datetime.date(0) == prev_weekday(datetime.today().date()):
                 print("BUY today!")
-                return math.floor(cash/data[0]/10)
+                return math.floor(self.broker.getposition(data).size)
             return math.floor(cash/data[1]/3)
         else:
-            return self.broker.getposition(data)
+            # return self.broker.getposition(data)
+            if data.datetime.date(0) == prev_weekday(datetime.today().date()):
+                print("SELL today!")
+                return math.floor(self.broker.getposition(data).size)
+            return math.floor(self.broker.getposition(data).size/2)

@@ -20,7 +20,7 @@ cerebro.broker.setcommission(commission=0.0005)
 #                                  fromdate=datetime(2020, 1, 1),
 #                                  todate=datetime(2020, 9, 15))
 
-df = getData(t='aapl')
+df = getData(t='fb')
 
 data = bt.feeds.PandasData(dataname=df)
 
