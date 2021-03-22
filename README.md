@@ -1,5 +1,5 @@
 # stock test
-- [x] Tiigo
+- [x] Tiingo
 
 # Get data from Tiigo and insert to mysql
 - you should set your token in util/setting.py  
@@ -7,6 +7,7 @@
 ```shell
 python update.py
 ```
+
 ## How to use
 ```shell
 python analysis_channel.py
