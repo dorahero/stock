@@ -2,7 +2,7 @@ import backtrader as bt
 import math
 from datetime import date, timedelta, datetime
 from tools.tools import prev_weekday
-from var.channel_var import *
+from util.channel_var import *
 
 # 定義一個Indicator物件
 class DonchianChannels(bt.Indicator):
