@@ -60,7 +60,7 @@ def updateData():
     # 用 replace 將符號進行替換
     stk_list = data.Symbol.apply(lambda x: x.replace('.', '-'))
     _ = set(stk_list[:10])
-    _.update(set(["AAPL", "ARKK", "NFLX", "NVDA", "TTWO", "TSLA", "GOOG", "VOO"]))
+    _.update(set(["AAPL", "ARKK", "NFLX", "NVDA", "TTWO", "TSLA", "GOOG", "VOO", "OTGLY"]))
     for s in _:
         TSLA = pdr.get_data_tiingo(s, api_key=TOKEN)
         TSLA = TSLA.reset_index(level=[0,1])
