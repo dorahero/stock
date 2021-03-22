@@ -1,5 +1,5 @@
 # stock test
-- [x] Tiingo
+- [x] Tiingo Api
 
 # Get data from Tiigo and insert to mysql
 - you should set your token in util/setting.py  
