@@ -57,6 +57,9 @@ class MyStrategy(bt.Strategy):
         self.setsizer(sizer())
         self.dataopen = self.datas[0].open
         self.dataclose = self.datas[0].close
+        self.datachigh = self.datas[0].high
+        self.dataclow = self.datas[0].low
+
 
     def next(self):
         if self.data[0] < self.myind.dcl[0]:
@@ -66,12 +69,12 @@ class MyStrategy(bt.Strategy):
         elif self.data[0] > self.myind.dch[0]:
             self.counter_sell += 1
             if self.counter_sell > SELL_TIMES:
-                self.log('SELL ' + ', Price: ' + str(self.dataopen[0]))
+                self.log('SELL ' + ', Price: ' + str(self.dataclose[0]))
                 # for data in self.datas:
                 #     size=self.getposition(data).size
                 #     if  size!= 0:
                 #         self.close(data)
-                self.sell(price=self.dataopen[0])
+                self.sell(price=self.dataclose[0])
                 self.counter_sell = 0
 
 class sizer(bt.Sizer):
@@ -80,10 +83,10 @@ class sizer(bt.Sizer):
             if data.datetime.date(0) == prev_weekday(datetime.today().date()):
                 print("BUY today!")
                 return math.floor(self.broker.getposition(data).size)
-            return math.floor(cash/data[1]/3)
+            return math.floor(cash/data[1]/BUY_SIZE)
         else:
             # return self.broker.getposition(data)
             if data.datetime.date(0) == prev_weekday(datetime.today().date()):
                 print("SELL today!")
                 return math.floor(self.broker.getposition(data).size)
-            return math.floor(self.broker.getposition(data).size/2)
+            return math.floor(self.broker.getposition(data).size/SELL_SIZE)
