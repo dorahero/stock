@@ -1,5 +1,6 @@
 # stock test
-- [x] Tiingo Api
+- [x] [Tiingo Api](https://api.tiingo.com/)  
+- [x] [backtrader](https://github.com/mementum/backtrader)    
 
 # Get data from Tiigo and insert to mysql
 - you should set your token in util/setting.py  
